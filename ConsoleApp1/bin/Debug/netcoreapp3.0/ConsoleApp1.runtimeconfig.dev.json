@@ -1,0 +1,8 @@
+{
+  "runtimeOptions": {
+    "additionalProbingPaths": [
+      "/Users/ekg/.dotnet/store/|arch|/|tfm|",
+      "/Users/ekg/.nuget/packages"
+    ]
+  }
+}
