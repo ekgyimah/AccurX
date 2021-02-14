@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
 using System.Text;
 
@@ -26,7 +27,9 @@ namespace ConsoleApp1
         list,
         sublist,
         status,
-        mistype
+        mistype,
+        undo,
+        redo,
     }
     
     class Program
@@ -65,40 +68,47 @@ namespace ConsoleApp1
                     case CommandMethod.add:
                     {
                         var todoListItem = TodoListItem.Create(command.Instructions);
-                        _todoItems.Add(todoListItem);
+                        var foundList = _stackItems.TryPeek(out var currentListItems);
+                        if (foundList == false)
+                        {
+                            _stackItems.Push(ImmutableList.Create(todoListItem));
+                            break;
+                        }
+                        var updatedList = currentListItems.Add(todoListItem);
+                        _stackItems.Push(updatedList);
                         break;
                     }
                     case CommandMethod.list:
                     {
                         var stringbuilder = new StringBuilder();
-                        foreach (var todoListItem in _todoItems)
+                        foreach (var todoListItem in _stackItems.Peek())
                         {
                             stringbuilder.AppendLine(todoListItem.Text + ", " + todoListItem.Status + ", " + String.Join(',', todoListItem.SubList));
                         }
                         Console.WriteLine(stringbuilder);
                         break;
                     }
-                    case CommandMethod.status:
-                    {
-                        var splitString = command.Instructions.Split(",");
-                        var foundItem = _todoItems.FirstOrDefault(x => x.Text.Equals(splitString[0]));
-                        if (foundItem != null)
-                        {
-                            foundItem.UpdateStatus(splitString[1]);
-                        }
-                        break;
-                    }
-                    case CommandMethod.sublist:
-                    {
-                        var splitStringSublist = command.Instructions.Split(":");
-                        var foundItem = _todoItems.FirstOrDefault(x => x.Text.Equals(splitStringSublist[0]));
-                        if (foundItem != null)
-                        {
-                            foundItem.AddToSublist(splitStringSublist[1].Split(","));
-                        }
-
-                        break;
-                    }
+                    // case CommandMethod.status:
+                    // {
+                    //     var splitString = command.Instructions.Split(",");
+                    //     var foundItem = _todoItems.FirstOrDefault(x => x.Text.Equals(splitString[0]));
+                    //     if (foundItem != null)
+                    //     {
+                    //         foundItem.UpdateStatus(splitString[1]);
+                    //     }
+                    //     break;
+                    // }
+                    // case CommandMethod.sublist:
+                    // {
+                    //     var splitStringSublist = command.Instructions.Split(":");
+                    //     var foundItem = _todoItems.FirstOrDefault(x => x.Text.Equals(splitStringSublist[0]));
+                    //     if (foundItem != null)
+                    //     {
+                    //         foundItem.AddToSublist(splitStringSublist[1].Split(","));
+                    //     }
+                    //
+                    //     break;
+                    // }
                     case CommandMethod.mistype:
                     {
                         Console.WriteLine(command.Instructions);
@@ -107,6 +117,18 @@ namespace ConsoleApp1
                     case CommandMethod.unknown:
                     {
                         Console.WriteLine(command.Instructions);
+                        break;
+                    }
+                    case CommandMethod.undo:
+                    {
+                        var topList = _stackItems.Pop();
+                        _stackUndoItems.Push(topList);
+                        break;
+                    }
+                    case CommandMethod.redo:
+                    {
+                        var topList = _stackUndoItems.Pop();
+                        _stackItems.Push(topList);
                         break;
                     }
                 }
@@ -174,26 +196,33 @@ namespace ConsoleApp1
             //make them in methods
         }
 
-        private static List<String> _commandHistory = new List<string>();
-        private static List<TodoListItem> _todoItems = new List<TodoListItem>();
+        private static Stack<ImmutableList<TodoListItem>> _stackItems = new Stack<ImmutableList<TodoListItem>>();
+        private static Stack<ImmutableList<TodoListItem>> _stackUndoItems = new Stack<ImmutableList<TodoListItem>>();
     }
 
     public class TodoListItem
     {
-        public static TodoListItem Create(string text) => new TodoListItem(text, "", new List<string>());
+        public static TodoListItem Create(string text) => new TodoListItem(text, "", ImmutableList<string>.Empty);
         
-        private TodoListItem(string text, string status, List<string> subList)
+        private TodoListItem(string text, string status, ImmutableList<string> subList)
         {
             Text = text;
             Status = status;
             SubList = subList;
         }
 
-        public string Text { get; private set; } // Autoproperty
-        public string Status { get; private set;  }
-        public List<string> SubList { get; private set; }
+        public string Text { get;  } // Autoproperty
+        public string Status { get;  }
+        public ImmutableList<string> SubList { get;  }
 
-        public void UpdateStatus(string updatedStatus) => Status = updatedStatus;
-        public void AddToSublist(string[] subList) => SubList.AddRange(subList);
+        public TodoListItem UpdateStatus(string updatedStatus)
+        {
+            return new TodoListItem(Text, updatedStatus, SubList);
+        }
+
+        public TodoListItem AddToSublist(string[] subList)
+        {
+            return new TodoListItem(Text, Status, SubList.AddRange(subList));
+        }
     }
 }

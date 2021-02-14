@@ -1,9 +1,10 @@
 {
   "version": 2,
-  "dgSpecHash": "yHHfnVBC3DMX0sX8GBvNb326XV7TfCH/16v6ZK96Jv02SZExoGWpXRHjGcULJb7w9jA1tW/1PoRJCkiHgk/xmA==",
+  "dgSpecHash": "k+YKbGe1GjIDdCmXAJC3mns41D2zx7y2tSIkPkAe63sLiikRKnpsJ2DUM3V2Vk4BWwehW01eWBrWOrNNv/QMqg==",
   "success": true,
   "projectFilePath": "C:\\Code\\ekgyimah\\AccurX\\ConsoleApp1\\ConsoleApp1.csproj",
   "expectedPackageFiles": [
+    "C:\\Users\\Laurence\\.nuget\\packages\\system.collections.immutable\\5.0.0\\system.collections.immutable.5.0.0.nupkg.sha512",
     "C:\\Users\\Laurence\\.nuget\\packages\\microsoft.netcore.app.ref\\3.0.0\\microsoft.netcore.app.ref.3.0.0.nupkg.sha512",
     "C:\\Users\\Laurence\\.nuget\\packages\\microsoft.windowsdesktop.app.ref\\3.0.0\\microsoft.windowsdesktop.app.ref.3.0.0.nupkg.sha512",
     "C:\\Users\\Laurence\\.nuget\\packages\\microsoft.aspnetcore.app.ref\\3.0.1\\microsoft.aspnetcore.app.ref.3.0.1.nupkg.sha512",

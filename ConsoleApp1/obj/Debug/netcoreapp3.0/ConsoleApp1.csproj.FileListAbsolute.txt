@@ -22,3 +22,5 @@ C:\Code\ekgyimah\AccurX\ConsoleApp1\obj\Debug\netcoreapp3.0\ConsoleApp1.Assembly
 C:\Code\ekgyimah\AccurX\ConsoleApp1\obj\Debug\netcoreapp3.0\ConsoleApp1.AssemblyInfo.cs
 C:\Code\ekgyimah\AccurX\ConsoleApp1\obj\Debug\netcoreapp3.0\ConsoleApp1.csproj.CoreCompileInputs.cache
 C:\Code\ekgyimah\AccurX\ConsoleApp1\obj\Debug\netcoreapp3.0\ConsoleApp1.genruntimeconfig.cache
+C:\Code\ekgyimah\AccurX\ConsoleApp1\bin\Debug\netcoreapp3.0\System.Collections.Immutable.dll
+C:\Code\ekgyimah\AccurX\ConsoleApp1\obj\Debug\netcoreapp3.0\ConsoleApp1.csproj.CopyComplete
