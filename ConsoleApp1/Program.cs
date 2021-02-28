@@ -3,11 +3,12 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using System.Text;
+using Microsoft.VisualBasic.CompilerServices;
 
 namespace ConsoleApp1
 {
 
-    public class CommandText
+    public class CommandText // Class responsible for splitting method from instruction
     {
         public CommandText(CommandMethod method, string instructions)
         {
@@ -19,7 +20,7 @@ namespace ConsoleApp1
         public string Instructions { get; }
     }
 
-    public enum CommandMethod
+    public enum CommandMethod //Enum class 
     {
         unknown,
         stop,
@@ -30,14 +31,16 @@ namespace ConsoleApp1
         mistype,
         undo,
         redo,
+        search,
+        next
     }
     
     class Program
     {
-        private static CommandText _GetFromReadline(string readline)
+        private static CommandText _GetFromReadline(string readline) // input parser
         {
             var splitOnSpace = readline.Split(" ");
-            var success = Enum.TryParse<CommandMethod>(splitOnSpace[0], out var command);
+            var success = Enum.TryParse<CommandMethod>(splitOnSpace[0], out var command); //Check if command exists in Enum. Create command var
             if (!success)
             {
                 var successToLower = Enum.TryParse<CommandMethod>(splitOnSpace[0].ToLower(), out var correctType);
@@ -48,8 +51,8 @@ namespace ConsoleApp1
                 
                 return new CommandText(CommandMethod.unknown, "It looks like you've not typed a command we recognise");
             }
-            var commandText = new CommandText(command, readline.Replace(splitOnSpace[0], ""));
-            return commandText;
+            var commandText = new CommandText(command, readline.Replace(splitOnSpace[0], "")); // create command instance with split command and instruction. Removes command from instruction
+            return commandText; // => commandText.instructions = [1] [2] ....
         }
         
         static void Main(string[] args)
@@ -68,47 +71,42 @@ namespace ConsoleApp1
                     case CommandMethod.add:
                     {
                         var todoListItem = TodoListItem.Create(command.Instructions);
-                        var foundList = _stackItems.TryPeek(out var currentListItems);
-                        if (foundList == false)
-                        {
-                            _stackItems.Push(ImmutableList.Create(todoListItem));
-                            break;
-                        }
-                        var updatedList = currentListItems.Add(todoListItem);
-                        _stackItems.Push(updatedList);
+                        TodoListItem.AddItem(todoListItem, _stackItems);
                         break;
                     }
                     case CommandMethod.list:
                     {
-                        var stringbuilder = new StringBuilder();
-                        foreach (var todoListItem in _stackItems.Peek())
-                        {
-                            stringbuilder.AppendLine(todoListItem.Text + ", " + todoListItem.Status + ", " + String.Join(',', todoListItem.SubList));
-                        }
-                        Console.WriteLine(stringbuilder);
+                        TodoListItem.ListItems(_stackItems);
                         break;
                     }
-                    // case CommandMethod.status:
-                    // {
-                    //     var splitString = command.Instructions.Split(",");
-                    //     var foundItem = _todoItems.FirstOrDefault(x => x.Text.Equals(splitString[0]));
-                    //     if (foundItem != null)
-                    //     {
-                    //         foundItem.UpdateStatus(splitString[1]);
-                    //     }
-                    //     break;
-                    // }
-                    // case CommandMethod.sublist:
-                    // {
-                    //     var splitStringSublist = command.Instructions.Split(":");
-                    //     var foundItem = _todoItems.FirstOrDefault(x => x.Text.Equals(splitStringSublist[0]));
-                    //     if (foundItem != null)
-                    //     {
-                    //         foundItem.AddToSublist(splitStringSublist[1].Split(","));
-                    //     }
-                    //
-                    //     break;
-                    // }
+                    case CommandMethod.status:
+                    {
+                        // command status items,newStatus
+                        var splitString = command.Instructions.Split(",");
+                        var itemList = _stackItems.Peek(); // find list
+                        TodoListItem.SetStatus(splitString, itemList, _stackItems);
+                        break;
+                    }
+                    case CommandMethod.search:
+                    {
+                        var splitString = command.Instructions.Split(" ");
+                        var itemList = _stackItems.Peek();
+                        TodoListItem.Search(splitString, itemList);
+                        break;
+                    }
+                    case CommandMethod.next:
+                    {
+                        var itemList = _stackItems.Peek();
+                        TodoListItem.Pagination(itemList, pagination);
+                        break;
+                    }
+                    case CommandMethod.sublist:
+                    {
+                        var splitStringSublist = command.Instructions.Split(":");
+                        var itemList = _stackItems.Peek();
+                        TodoListItem.AddToSubList(splitStringSublist, itemList, _stackItems);
+                        break;
+                    }
                     case CommandMethod.mistype:
                     {
                         Console.WriteLine(command.Instructions);
@@ -136,73 +134,15 @@ namespace ConsoleApp1
                 var newInstructions = Console.ReadLine();
                 command = _GetFromReadline(newInstructions);
             }
-            
-                // se if (readline.StartsWith("search"))
-                // {
-                //     var splitString = readline.Split(" ");
-                //     var stringbuilder = new StringBuilder();
-                //     
-                //     foreach (var todoListItem in _todoItems.Where(x=> x.Text.Contains(splitString[1])))
-                //     {
-                //         stringbuilder.AppendLine(todoListItem.Text + ", " + todoListItem.Status);
-                //     }
-                //     Console.WriteLine(stringbuilder); //results
-                // } else if (readline.Equals("next")) //pagination
-                // {
-                //     var stringbuilder = new StringBuilder();
-                //
-                //     foreach (var todoListItem in _todoItems.GetRange(pagination, 2))
-                //     {
-                //         stringbuilder.AppendLine(todoListItem.Text + ", " + todoListItem.Status);
-                //     }
-                //     Console.WriteLine(stringbuilder);
-                //     pagination = pagination + 2;
-                // } else if (readline.Equals("undo"))
-                // {
-                //     historyCommandPointer = historyCommandPointer - 1;
-                //     // historyCommandPointer;
-                //     string undoCommand = _commandHistory[historyCommandPointer];
-                //     Console.WriteLine(undoCommand);
-                //     Console.ReadLine();
-                // } else if (readline.Equals("redo"))
-                // {
-                //     if (historyCommandPointer < _commandHistory.Count)
-                //     {
-                //         historyCommandPointer = historyCommandPointer + 1;
-                //         string redoCommand = _commandHistory[historyCommandPointer];
-                //         Console.WriteLine(redoCommand);
-                //         Console.ReadLine();
-                //     }
-                //     else
-                //     {
-                //         Console.ReadLine();
-                //     }
-                // }
-                //
-                // if (!readline.Contains("undo")&&!readline.Contains("redo"))
-                // {
-                //     _commandHistory.Add(readline);
-                //     historyCommandPointer = historyCommandPointer + 1;
-                //     readline = Console.ReadLine();
-                // }
-
-                //write command
-                //save command in array
-                //undo -> (go down array)
-                //redo -> (go up array)
-            //}
-            // adding complexity to thetodo
-            //remove code. if else to switch
-            //make them in methods
         }
 
-        private static Stack<ImmutableList<TodoListItem>> _stackItems = new Stack<ImmutableList<TodoListItem>>();
+        private static Stack<ImmutableList<TodoListItem>> _stackItems = new Stack<ImmutableList<TodoListItem>>(); //immutable list
         private static Stack<ImmutableList<TodoListItem>> _stackUndoItems = new Stack<ImmutableList<TodoListItem>>();
     }
 
     public class TodoListItem
     {
-        public static TodoListItem Create(string text) => new TodoListItem(text, "", ImmutableList<string>.Empty);
+        public static TodoListItem Create(string text) => new TodoListItem(text, "", ImmutableList<string>.Empty); //default constructor. return empty sublist
         
         private TodoListItem(string text, string status, ImmutableList<string> subList)
         {
@@ -217,12 +157,81 @@ namespace ConsoleApp1
 
         public TodoListItem UpdateStatus(string updatedStatus)
         {
+            
             return new TodoListItem(Text, updatedStatus, SubList);
         }
 
         public TodoListItem AddToSublist(string[] subList)
         {
             return new TodoListItem(Text, Status, SubList.AddRange(subList));
+        }
+
+        public static void Search(String[] splitString, ImmutableList<TodoListItem> itemList )
+        {
+            // var splitString = command.Instructions.Split(" ");
+            var stringbuilder = new StringBuilder();
+            // var itemList = _stackItems.Peek();
+                        
+            foreach (var todoListItem in itemList.Where(x=> x.Text.Contains(splitString[1])))
+            {
+                stringbuilder.AppendLine(todoListItem.Text + ", " + todoListItem.Status);
+            }
+            Console.WriteLine(stringbuilder); //results
+        }
+
+        public static void SetStatus(String[] splitString, ImmutableList<TodoListItem> itemList, Stack<ImmutableList<TodoListItem>> _stackItems)
+        {
+            var foundItem = itemList.FirstOrDefault(x => x.Text.Equals(splitString[0]));
+            if (foundItem != null)
+            {
+                foundItem = foundItem.UpdateStatus(splitString[1]); // delete old value
+            }
+            var updatedList = itemList.Add(foundItem); //add item to list
+            _stackItems.Push(updatedList);
+        }
+
+        public static void Pagination(ImmutableList<TodoListItem> itemList, int pagination)
+        {
+            var stringbuilder = new StringBuilder();
+            foreach (var todoListItem in itemList.GetRange(pagination, 2))
+            {
+                stringbuilder.AppendLine(todoListItem.Text + ", " + todoListItem.Status);
+            }
+            Console.WriteLine(stringbuilder);
+            pagination = pagination + 2;
+        }
+
+        public static void AddToSubList(String[] splitStringSublist, ImmutableList<TodoListItem> itemList, Stack<ImmutableList<TodoListItem>> _stackItems)
+        {
+            var foundItem = itemList.FirstOrDefault(x => x.Text.Equals(splitStringSublist[0]));
+            if (foundItem != null)
+            {
+                foundItem = foundItem.AddToSublist(splitStringSublist[1].Split(","));
+            }
+            var updatedList = itemList.Add(foundItem); //add item to list
+            _stackItems.Push(updatedList);
+        }
+
+        public static void ListItems(Stack<ImmutableList<TodoListItem>> _stackItems)
+        {
+            var stringbuilder = new StringBuilder();
+            foreach (var todoListItem in _stackItems.Peek())
+            {
+                stringbuilder.AppendLine(todoListItem.Text + ", " + todoListItem.Status + ", " + String.Join(',', todoListItem.SubList));
+            }
+            Console.WriteLine(stringbuilder);
+        }
+
+        public static void AddItem( TodoListItem todoListItem, Stack<ImmutableList<TodoListItem>> _stackItems)
+        {
+            var foundList = _stackItems.TryPeek(out var currentListItems); //check if list exists. return the list
+            if (foundList == false)
+            {
+                _stackItems.Push(ImmutableList.Create(todoListItem));
+                return;
+            }
+            var updatedList = currentListItems.Add(todoListItem); //add item to list
+            _stackItems.Push(updatedList);
         }
     }
 }
