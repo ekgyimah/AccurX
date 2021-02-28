@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using System.Text;
-using Microsoft.VisualBasic.CompilerServices;
 
 namespace ConsoleApp1
 {
@@ -153,6 +152,7 @@ namespace ConsoleApp1
 
         public string Text { get;  } // Autoproperty
         public string Status { get;  }
+        
         public ImmutableList<string> SubList { get;  }
 
         public TodoListItem UpdateStatus(string updatedStatus)
@@ -184,10 +184,10 @@ namespace ConsoleApp1
             var foundItem = itemList.FirstOrDefault(x => x.Text.Equals(splitString[0]));
             if (foundItem != null)
             {
-                foundItem = foundItem.UpdateStatus(splitString[1]); // delete old value
+                var newItem = foundItem.UpdateStatus(splitString[1]); // delete old value
+                var updatedList = itemList.Replace(foundItem, newItem);
+                _stackItems.Push(updatedList);
             }
-            var updatedList = itemList.Add(foundItem); //add item to list
-            _stackItems.Push(updatedList);
         }
 
         public static void Pagination(ImmutableList<TodoListItem> itemList, int pagination)
@@ -206,10 +206,10 @@ namespace ConsoleApp1
             var foundItem = itemList.FirstOrDefault(x => x.Text.Equals(splitStringSublist[0]));
             if (foundItem != null)
             {
-                foundItem = foundItem.AddToSublist(splitStringSublist[1].Split(","));
+                var newItem = foundItem.AddToSublist(splitStringSublist[1].Split(","));
+                var updatedList = itemList.Replace(foundItem, newItem);
+                _stackItems.Push(updatedList);
             }
-            var updatedList = itemList.Add(foundItem); //add item to list
-            _stackItems.Push(updatedList);
         }
 
         public static void ListItems(Stack<ImmutableList<TodoListItem>> _stackItems)
