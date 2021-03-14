@@ -1,14 +1,11 @@
 {
   "version": 2,
-  "dgSpecHash": "elDG9toNLPH0bkw+zqBT9baYKvnI7EoHtUA2F8qfO1shIoM9N5Tg4xzJoHqt4stOe5r/7xmS6Ul2nGwui/ZKpw==",
+  "dgSpecHash": "p1CQGUPYKCDsqGn+0GekpBcdfZIWsgJFK1gxG9lxcVl/v3o3L479FB389MpoGJ5hrH4Nlx9sx8vlxA0fN4GwCQ==",
   "success": true,
-  "projectFilePath": "C:\\code\\ekgyimah\\AccurX\\ConsoleApp1\\ConsoleApp1.csproj",
+  "projectFilePath": "/Users/ekg/RiderProjects/ConsoleApp1/ConsoleApp1/ConsoleApp1.csproj",
   "expectedPackageFiles": [
-    "C:\\Users\\Laurence\\.nuget\\packages\\system.collections.immutable\\5.0.0\\system.collections.immutable.5.0.0.nupkg.sha512",
-    "C:\\Users\\Laurence\\.nuget\\packages\\microsoft.netcore.app.ref\\3.0.0\\microsoft.netcore.app.ref.3.0.0.nupkg.sha512",
-    "C:\\Users\\Laurence\\.nuget\\packages\\microsoft.windowsdesktop.app.ref\\3.0.0\\microsoft.windowsdesktop.app.ref.3.0.0.nupkg.sha512",
-    "C:\\Users\\Laurence\\.nuget\\packages\\microsoft.aspnetcore.app.ref\\3.0.1\\microsoft.aspnetcore.app.ref.3.0.1.nupkg.sha512",
-    "C:\\Users\\Laurence\\.nuget\\packages\\microsoft.netcore.app.host.win-x64\\3.0.3\\microsoft.netcore.app.host.win-x64.3.0.3.nupkg.sha512"
+    "/Users/ekg/.nuget/packages/system.collections.immutable/5.0.0/system.collections.immutable.5.0.0.nupkg.sha512",
+    "/Users/ekg/.nuget/packages/microsoft.aspnetcore.app.ref/3.0.1/microsoft.aspnetcore.app.ref.3.0.1.nupkg.sha512"
   ],
   "logs": []
 }
